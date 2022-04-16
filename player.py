@@ -46,40 +46,26 @@ class Player(pygame.sprite.Sprite):
             self.velX = 0
     
     def collide(self, sprites, velX, velY):
+        x = self.rect.x
+        y = self.rect.y
+        
         for sprite in sprites:
             if type(sprite) is Player: continue
-
-            if pygame.sprite.collide_rect(self, sprite):
-                if velX > 0:
-                    self.rect.right = sprite.rect.left
-                    self.velX = 0
-                if velX < 0:
-                    self.rect.left = sprite.rect.right
-                    self.velX = 0
-                
-                if velY > 0:
-                    self.rect.bottom = sprite.rect.top
-                    self.on_ground = True
-                    self.velY = 0
-                
-                if velY < 0:
-                    self.rect.top = sprite.rect.bottom
-                    self.velY = 0
             
-
-    def collision(self, blocks, velX, velY):
-        for block in blocks:
-            if pygame.sprite.collide_rect(self, block):
-                if velX > 0:
-                    self.rect.right = block.rect.left
-                    self.velX = 0
-                if velX < 0:
-                    self.rect.left = block.rect.right
-                    self.velX = 0
-                if velY > 0:
-                    self.rect.bottom = block.rect.top
-                    self.on_ground = True
-                    self.velY = 0
-                if velY < 0:
-                    self.rect.top = block.rect.bottom
-                    self.velY = 0
+            if sprite.rect.x >= x - 100 and sprite.rect.x <= x + 100 and sprite.rect.y >= y - 100 and sprite.rect.y <= y + 100:
+                if pygame.sprite.collide_rect(self, sprite):
+                    if velX > 0:
+                        self.rect.right = sprite.rect.left
+                        self.velX = 0
+                    if velX < 0:
+                        self.rect.left = sprite.rect.right
+                        self.velX = 0
+                    
+                    if velY > 0:
+                        self.rect.bottom = sprite.rect.top
+                        self.on_ground = True
+                        self.velY = 0
+                    
+                    if velY < 0:
+                        self.rect.top = sprite.rect.bottom
+                        self.velY = 0

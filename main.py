@@ -1,6 +1,7 @@
 import pygame
 from objects import Block
 import level
+import ui
 
 
 FPS = 60
@@ -14,7 +15,7 @@ class Game:
 
         self.current_scene = 0
         self.clock = pygame.time.Clock()
-    
+
     def run(self):
         self.scene()
         
@@ -31,9 +32,9 @@ class Game:
         game = True
 
         lev = level.Level()
-        lev.build("test.json")
+        lev.build("test.txt")
 
-        scene = pygame.Surface((lev.width, lev.height))
+        scene = pygame.Surface(RES)
 
         scene_x = 0
         scene_y = 0
@@ -42,14 +43,14 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game = False
-            
+
+            lev.update()
             self.display.fill((0, 0, 0))
             
             self.display.blit(scene, (0, 0))
             scene.fill((0, 0 ,0))
             
-            lev.draw(scene)
-            lev.update()
+            lev.draw(scene, (scene_x, scene_y))
 
             pygame.display.flip()
             self.clock.tick(FPS)
