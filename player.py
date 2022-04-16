@@ -49,23 +49,24 @@ class Player(pygame.sprite.Sprite):
         x = self.rect.x
         y = self.rect.y
         
-        for sprite in sprites:
+        sprs = filter(lambda sprite: sprite.rect.x >= x - 100 and sprite.rect.x <= x + 100 and sprite.rect.y >= y - 100 and sprite.rect.y <= y + 100, sprites)
+
+        for sprite in sprs:
             if type(sprite) is Player: continue
-            
-            if sprite.rect.x >= x - 100 and sprite.rect.x <= x + 100 and sprite.rect.y >= y - 100 and sprite.rect.y <= y + 100:
-                if pygame.sprite.collide_rect(self, sprite):
-                    if velX > 0:
-                        self.rect.right = sprite.rect.left
-                        self.velX = 0
-                    if velX < 0:
-                        self.rect.left = sprite.rect.right
-                        self.velX = 0
-                    
-                    if velY > 0:
-                        self.rect.bottom = sprite.rect.top
-                        self.on_ground = True
-                        self.velY = 0
-                    
-                    if velY < 0:
-                        self.rect.top = sprite.rect.bottom
-                        self.velY = 0
+
+            if pygame.sprite.collide_rect(self, sprite):
+                if velX > 0:
+                    self.rect.right = sprite.rect.left
+                    self.velX = 0
+                if velX < 0:
+                    self.rect.left = sprite.rect.right
+                    self.velX = 0
+                
+                if velY > 0:
+                    self.rect.bottom = sprite.rect.top
+                    self.on_ground = True
+                    self.velY = 0
+                
+                if velY < 0:
+                    self.rect.top = sprite.rect.bottom
+                    self.velY = 0
