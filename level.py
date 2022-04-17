@@ -3,41 +3,56 @@ import json
 from objects import Block
 from player import Player
 
-TILE = 50
+TILE = 32
 
 class Level(pygame.sprite.Group):
+    def __init__(self, tiles):
+        super().__init__()
+
+        self.tiles = tiles
+    
     def build(self, path):
         file = open(path, "r").read()
 
         lines = file.split("\n")
 
         for y in range(len(lines)):
-            for x in range(len(lines[y])):
-                if lines[y][x] == "-":
-                    block = Block(x * TILE, y * TILE, TILE, TILE)
-                    self.add(block)
-                elif lines[y][x] == "p":
+            line = lines[y].split(",")
+            for x in range(len(line)):
+                if line[x] == "p":
                     player = Player(x * TILE, y * TILE)
                     self.player = player
-                    self.add(player)
+                else:
+                    if line[x] == "-1": continue
+
+                    block = Block(x * TILE, y * TILE, TILE, TILE, self.tiles.get_tile(int(line[x])))
+                    self.add(block)
+        
+        self.add(self.player)
         
         self.sprites = self.sprites()
     
     def update(self):
-        sprites = filter(lambda sprite: sprite.rect.x >= x - 100 and sprite.rect.x <= x + 100 and sprite.rect.y >= y - 100 and sprite.rect.y <= y + 100, self.sprites)
-
         player = self.player
         x = player.rect.x
         y = player.rect.y
+        d = TILE * 2
+
+        sprites = filter(lambda sprite: sprite.rect.x >= x - d and sprite.rect.x <= x + d and sprite.rect.y >= y - d and sprite.rect.y <= y + d, self.sprites)
         
         for sprite in self.sprites:
             sprite.update(self.sprites)
     
-    def draw(self, surface, pos):
-        x = pos[0]
-        y = pos[1]
+    def draw(self, surface):
+        player = self.player
+        
+        x = player.rect.x
+        y = player.rect.y
 
-        sprites = filter(lambda sprite: sprite.rect.x >= x - 50 and sprite.rect.x <= x + 850 and sprite.rect.y >= y - 50 and sprite.rect.y <= y + 650, self.sprites)
+        sx = x - 864 // 2
+        ex = x + 864 // 2
+
+        sprites = filter(lambda spr: spr.rect.x >= sx and spr.rect.x <= ex, self.sprites)
 
         if hasattr(surface, "blits"):
             self.spritedict.update(
@@ -46,6 +61,7 @@ class Level(pygame.sprite.Group):
         else:
             for spr in sprites:
                 self.spritedict[spr] = surface.blit(spr.image, spr.rect)
+        
         self.lostsprites = []
         dirty = self.lostsprites
 
