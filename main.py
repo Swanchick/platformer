@@ -19,6 +19,8 @@ class Game:
         self.current_scene = 0
         self.clock = pygame.time.Clock()
 
+        self.tiles = Tilesheet("src/images/textures.jpg", TILE, TILE, 19, 12)
+
     def run(self):
         self.scene()
     
@@ -36,9 +38,7 @@ class Game:
     def scene(self):
         game = True
 
-        tiles = Tilesheet("src/images/textures.jpg", TILE, TILE, 19, 12)
-
-        lev = level.Level(tiles)
+        lev = level.Level(self.tiles)
         lev.build("test.txt")
 
         scene = pygame.Surface((lev.lenght, HEIGHT * 2))

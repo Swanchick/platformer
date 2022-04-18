@@ -1,5 +1,5 @@
 import pygame
-from objects import Block, TBlock
+from objects import Block, TBlock, BreakBlock
 
 GRAVITY = 0.3
 
@@ -128,3 +128,6 @@ class Player(pygame.sprite.Sprite):
                 if velY < 0:
                     self.rect.top = sprite.rect.bottom
                     self.velY = 0
+
+                    if type(sprite) is BreakBlock:
+                        sprite.hit()
