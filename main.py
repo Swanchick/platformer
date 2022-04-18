@@ -41,9 +41,7 @@ class Game:
         lev = level.Level(tiles)
         lev.build("test.txt")
 
-        lenght = 2000
-
-        scene = pygame.Surface((lenght, HEIGHT))
+        scene = pygame.Surface((lev.lenght, HEIGHT * 2))
 
         self.scene_x = 0
         self.scene_y = 0
@@ -56,7 +54,7 @@ class Game:
             lev.update()
             self.display.fill((0, 0, 0))
             
-            self.move_camera(lev.player, lenght)
+            self.move_camera(lev.player, lev.lenght)
 
             self.display.blit(scene, (self.scene_x, self.scene_y))
             scene.fill((107, 140, 255))

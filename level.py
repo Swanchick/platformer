@@ -1,6 +1,6 @@
 import pygame
 import json
-from objects import Block
+from objects import Block, TBlock
 from player import Player
 
 TILE = 32
@@ -22,12 +22,22 @@ class Level(pygame.sprite.Group):
                 if line[x] == "p":
                     player = Player(x * TILE, y * TILE)
                     self.player = player
+                if line[x][0].isalpha():
+                    tex = line[x][1:]
+                    if line[x][0] == "t":
+                        block = TBlock(x * TILE, y * TILE, TILE, TILE, self.tiles.get_tile(int(tex)))
+                    
+                    
+                    self.add(block)
                 else:
                     if line[x] == "-1": continue
 
                     block = Block(x * TILE, y * TILE, TILE, TILE, self.tiles.get_tile(int(line[x])))
                     self.add(block)
-        
+
+        lines.sort(key=lambda x: len(x.split(",")))
+        self.lenght = len(lines[0]) * TILE
+
         self.add(self.player)
         
         self.sprites = self.sprites()

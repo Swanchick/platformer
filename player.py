@@ -1,5 +1,5 @@
 import pygame
-
+from objects import Block, TBlock
 
 GRAVITY = 0.3
 
@@ -110,6 +110,7 @@ class Player(pygame.sprite.Sprite):
 
         for sprite in sprs:
             if type(sprite) is Player: continue
+            if type(sprite) is TBlock: continue
 
             if pygame.sprite.collide_rect(self, sprite):
                 if velX > 0:
