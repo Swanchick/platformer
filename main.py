@@ -39,7 +39,7 @@ class Game:
         game = True
 
         lev = level.Level(self.tiles)
-        lev.build("test.txt")
+        lev.build("src/levels/test.lev")
 
         scene = pygame.Surface((lev.lenght, HEIGHT * 2))
 

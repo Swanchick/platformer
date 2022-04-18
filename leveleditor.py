@@ -2,8 +2,8 @@ import pygame
 import ui
 import level
 from tile import Tilesheet
-from player import PlayerAnimation
-from objects import Block
+from player import PlayerAnimation, Player
+from objects import Block, TBlock
 
 RES = WIDTH, HEIGHT = (800, 600)
 FPS = 60
@@ -23,9 +23,49 @@ class Window:
         self.camera_speed = 5
 
         self.block = self.tiles.tiles[0]
+        self.type = "block"
     
-    def choose_block(self, texture_id):
-        self.block = self.tiles.tiles[texture_id]
+    def choose_block(self, texture, block_type):
+        if texture != '':
+            self.block = texture
+        
+        if block_type != "":
+            self.type = block_type
+        
+        print(self.type)
+
+    def save(self):
+        file = open("src/levels/test.lev", "w")
+        
+        for spr in self.lev.sprites():
+            x = int(spr.rect.x / 32)
+            y = int(spr.rect.y / 32)
+
+            if type(spr) is Player:
+                self.lines[y][x] = "p"
+            elif type(spr) is TBlock:
+                img = str(self.tiles.tiles.index(spr.image))
+                
+                self.lines[y][x] = f"t{img}"
+            else:
+                img = str(self.tiles.tiles.index(spr.image))
+
+                self.lines[y][x] = img
+        
+        text = ""
+
+        for y in range(len(self.lines)):
+            line = ""
+            
+            for x in range(len(self.lines[y])):
+                line += str(self.lines[y][x]) + ","
+            
+            line = line[:-1]
+            line += "\n"
+            text += line
+        
+        file.write(text)
+        file.close()
 
     def start(self):
         
@@ -42,8 +82,22 @@ class Window:
 
         self.ui_elements = ui.VerticalScroll(0, HEIGHT-100, WIDTH, 100)
 
+        save_button = ui.Button(WIDTH-100, HEIGHT-100, 100, 25, "Save", self.save, [])
+        
+        self.ui_elements.add(save_button)
+
+        player_button = ui.ImageButton(0, HEIGHT-100, 50, 50, self.playertiles.get_idle(), self.choose_block, [self.playertiles.get_idle(), "player"])
+        self.ui_elements.add(player_button)
+
+        b_button = ui.Button(50, HEIGHT-100, 50, 50, "B", self.choose_block, ['', "block"])
+        self.ui_elements.add(b_button)
+
+
+        t_button = ui.Button(100, HEIGHT-100, 50, 50, "T", self.choose_block, ['', "tblock"])
+        self.ui_elements.add(t_button)
+
         for i in range(len(self.tiles.tiles)):
-            but = ui.ImageButton(50 * i, HEIGHT - 50, 50, 50, self.tiles.tiles[i], self.choose_block, [i])
+            but = ui.ImageButton(50 * i, HEIGHT - 50, 50, 50, self.tiles.tiles[i], self.choose_block, [self.tiles.tiles[i], ""])
             self.ui_elements.add(but)
 
         self.constructor()
@@ -82,8 +136,14 @@ class Window:
 
         x = int((mouse_pos[0] - self.scene_x) / 32) * 32 
         y = int((mouse_pos[1] - self.scene_y) / 32) * 32
-    
-        block = Block(x, y, 32, 32, self.block)
+
+        if self.type == "player":
+            block = Player(x, y)
+        elif self.type == "tblock":
+            block = TBlock(x, y, 32, 32, self.block)
+        else:
+            block = Block(x, y, 32, 32, self.block)
+        
         self.lev.add(block)
 
     def remove_block(self):
@@ -101,7 +161,7 @@ class Window:
 
         self.lev = pygame.sprite.Group()
         
-        scene = pygame.Surface((50 * TILE, 19 * TILE))
+        scene = pygame.Surface((50 * TILE, HEIGHT))
 
         ui_surface = pygame.Surface((WIDTH, 150))
 

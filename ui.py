@@ -93,6 +93,22 @@ class VerticalScroll(pygame.sprite.Group):
         for spr in self.sprites():
             spr.rect.x -= self.speed
             self.scrolled -= self.speed
+    
+    def draw(self, surface):
+        sprites = filter(lambda spr: spr.rect.x >= -50 and spr.rect.x <= 850, self.sprites())
+
+        if hasattr(surface, "blits"):
+            self.spritedict.update(
+                zip(sprites, surface.blits((spr.image, spr.rect) for spr in sprites))
+            )
+        else:
+            for spr in sprites:
+                self.spritedict[spr] = surface.blit(spr.image, spr.rect)
+        
+        self.lostsprites = []
+        dirty = self.lostsprites
+
+        return dirty
 
         
 
