@@ -128,7 +128,7 @@ class TextMenu(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
 
-        self.image = pygame.Surface((600, 400))
+        self.image = pygame.Surface((width, height))
         self.image.fill((107, 140, 255))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -143,7 +143,7 @@ class TextMenu(pygame.sprite.Sprite):
     
     def draw(self):
         for i in range(len(self.buttons)):
-            draw_mario_text(self.image, f">  {self.buttons[i].text}" if self.button == i else f"  {self.buttons[i].text}", (0, 30*i), 24, (255, 255, 255))
+            draw_mario_text(self.image, f"- {self.buttons[i].text}" if self.button == i else f"  {self.buttons[i].text}", (0, 200+30*i), 24, (255, 255, 255))
 
     def up(self):
         if self.button == 0: return
@@ -159,8 +159,6 @@ class TextMenu(pygame.sprite.Sprite):
         button = self.buttons[self.button]
 
         button.click()
-
-        print("Clicked")
 
     def update(self):
         self.image.fill((107, 140, 255))

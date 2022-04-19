@@ -11,6 +11,8 @@ RES = WIDTH, HEIGHT = (800, 600)
 
 TILE = 32
 
+LEVEL_COLOR = (107, 140, 255)
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -58,11 +60,10 @@ class Game:
                 if event.type == pygame.QUIT:
                     game = False
                     self.current_scene = "quit"
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         game = False
                         self.current_scene = "menu"
-                    
 
             lev.update()
             self.display.fill((0, 0, 0))
@@ -70,7 +71,7 @@ class Game:
             self.move_camera(lev.player, lev.lenght)
 
             self.display.blit(scene, (self.scene_x, self.scene_y))
-            scene.fill((107, 140, 255))
+            scene.fill(LEVEL_COLOR)
 
             lev.draw(scene)
 
@@ -88,7 +89,7 @@ class Game:
 
         files = os.listdir("src/levels/")
 
-        text_menu = ui.TextMenu(0, 0, 600, 400)
+        text_menu = ui.TextMenu(WIDTH // 2 - 300 // 2, 0, 300, 600)
         
         for i in files:
             if i[-3:] != "lev": return
@@ -102,7 +103,7 @@ class Game:
         while self.game:
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
-                    game = False
+                    self.game = False
                     self.current_scene = "quit"
                 
                 if e.type == pygame.KEYDOWN:
@@ -113,15 +114,15 @@ class Game:
                     elif e.key == pygame.K_RETURN:
                         text_menu.click()
             
-            self.display.fill((0, 0, 0))
+            self.display.fill(LEVEL_COLOR)
 
             ui_group.update()
             ui_group.draw(self.display)
 
+            ui.draw_mario_text(self.display, "Super Mario Bros", (90, 20), 48, (255, 255, 255))
 
             pygame.display.flip()
             self.clock.tick(FPS)
-
             
 if __name__ == "__main__":
     game = Game()
