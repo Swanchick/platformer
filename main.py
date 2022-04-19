@@ -3,6 +3,7 @@ import level
 import ui
 from objects import Block
 from tile import Tilesheet
+import os
 
 
 FPS = 60
@@ -16,20 +17,26 @@ class Game:
 
         self.display = pygame.display.set_mode(RES)
 
-        self.current_scene = 0
+        self.current_scene = "menu"
         self.clock = pygame.time.Clock()
 
         self.tiles = Tilesheet("src/images/textures.jpg", TILE, TILE, 19, 12)
 
     def run(self):
-        self.scene()
+        self.scene_manager()
+
+        pygame.quit()
     
     def scene_manager(self):
-        if self.current_scene == 0:
-            self.scene()
-        
-    def scene_pos(self, player_pos: tuple, screen_x: int, screen_y: int):
-        pass
+        work = True
+
+        while work:
+            if self.current_scene == "menu":
+                self.menu()
+            elif self.current_scene == "quit":
+                work = False
+            else:
+                self.scene()
     
     def move_camera(self, player, lenght):
         self.scene_x = min(-player.rect.x + WIDTH // 2, 0)
@@ -39,7 +46,7 @@ class Game:
         game = True
 
         lev = level.Level(self.tiles)
-        lev.build("src/levels/test.lev")
+        lev.build(self.current_scene)
 
         scene = pygame.Surface((lev.lenght, HEIGHT * 2))
 
@@ -50,6 +57,12 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game = False
+                    self.current_scene = "quit"
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        game = False
+                        self.current_scene = "menu"
+                    
 
             lev.update()
             self.display.fill((0, 0, 0))
@@ -62,6 +75,49 @@ class Game:
             lev.draw(scene)
 
             ui.draw_text(self.display, str(int(self.clock.get_fps())), (0, 0), 24, (0, 0, 0))
+
+            pygame.display.flip()
+            self.clock.tick(FPS)
+
+    def change_level(self, level):
+        self.game = False
+        self.current_scene = level
+
+    def menu(self):
+        self.game = True
+
+        files = os.listdir("src/levels/")
+
+        text_menu = ui.TextMenu(0, 0, 600, 400)
+        
+        for i in files:
+            if i[-3:] != "lev": return
+
+            text_menu.add(i, self.change_level, [f"src/levels/{i}"])
+        
+        ui_group = pygame.sprite.Group()
+
+        ui_group.add(text_menu)
+
+        while self.game:
+            for e in pygame.event.get():
+                if e.type == pygame.QUIT:
+                    game = False
+                    self.current_scene = "quit"
+                
+                if e.type == pygame.KEYDOWN:
+                    if e.key == pygame.K_UP:
+                        text_menu.up()
+                    elif e.key == pygame.K_DOWN:
+                        text_menu.down()
+                    elif e.key == pygame.K_RETURN:
+                        text_menu.click()
+            
+            self.display.fill((0, 0, 0))
+
+            ui_group.update()
+            ui_group.draw(self.display)
+
 
             pygame.display.flip()
             self.clock.tick(FPS)

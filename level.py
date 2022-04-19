@@ -26,10 +26,11 @@ class Level(pygame.sprite.Group):
                     tex = line[x][1:]
                     if line[x][0] == "t":
                         block = TBlock(x * TILE, y * TILE, TILE, TILE, self.tiles.get_tile(int(tex)))
+                        self.add(block)
                     elif line[x][0] == "b":
                         block = BreakBlock(x * TILE, y * TILE, TILE, TILE, self.tiles.get_tile(int(tex)))
                     
-                    self.add(block)
+                        self.add(block)
                 else:
                     if line[x] == "-1": continue
 

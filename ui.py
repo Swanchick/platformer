@@ -7,6 +7,11 @@ def draw_text(surface, text: str, pos: tuple, size: float, color: tuple):
     font_surface = font.render(text, True, color)
     surface.blit(font_surface, pos)
 
+def draw_mario_text(surface, text: str, pos: tuple, size: float, color: tuple):
+    font = pygame.font.Font("src\\font\\mario.ttf", size)
+
+    font_surface = font.render(text, True, color)
+    surface.blit(font_surface, pos)
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, text, func, args):
@@ -110,6 +115,54 @@ class VerticalScroll(pygame.sprite.Group):
 
         return dirty
 
-        
+class TextButton:
+    def __init__(self, text, func, args):
+        self.text = text
+        self.func = func
+        self.args = args
+    
+    def click(self):
+        self.func(*self.args)
 
+class TextMenu(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+
+        self.image = pygame.Surface((600, 400))
+        self.image.fill((107, 140, 255))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.buttons = []
+        self.button = 0
+    
+    def add(self, text, func, args):
+        button = TextButton(f"  {text}", func, args)
+        self.buttons.append(button)
+    
+    def draw(self):
+        for i in range(len(self.buttons)):
+            draw_mario_text(self.image, f">  {self.buttons[i].text}" if self.button == i else f"  {self.buttons[i].text}", (0, 30*i), 24, (255, 255, 255))
+
+    def up(self):
+        if self.button == 0: return
+
+        self.button -= 1
+
+    def down(self):
+        if self.button == len(self.buttons)-1: return
         
+        self.button += 1
+
+    def click(self):
+        button = self.buttons[self.button]
+
+        button.click()
+
+        print("Clicked")
+
+    def update(self):
+        self.image.fill((107, 140, 255))
+
+        self.draw()
