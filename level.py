@@ -1,6 +1,6 @@
 import pygame
 import json
-from objects import Block, TBlock, BreakBlock
+from objects import Block, TBlock, BreakBlock, Enemy
 from player import Player
 
 TILE = 32
@@ -22,7 +22,10 @@ class Level(pygame.sprite.Group):
                 if line[x] == "p":
                     player = Player(x * TILE, y * TILE)
                     self.player = player
-                if line[x][0].isalpha():
+                elif line[x] == "e":
+                    enemy = Enemy(x * TILE, y * TILE)
+                    self.add(enemy)
+                elif line[x][0].isalpha():
                     tex = line[x][1:]
                     if line[x][0] == "t":
                         block = TBlock(x * TILE, y * TILE, TILE, TILE, self.tiles.get_tile(int(tex)))

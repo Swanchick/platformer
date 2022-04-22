@@ -1,30 +1,8 @@
 import pygame
 from objects import Block, TBlock, BreakBlock
+from tile import PlayerAnimation
 
 GRAVITY = 0.3
-
-class PlayerAnimation:
-    def __init__(self, texture, width, height, frames):
-        self.image = pygame.image.load(texture).convert()
-        self.frames = []
-        for i in range(frames):
-            rect = (i * width, 0, width, height)
-            self.frames.append(self.image.subsurface(rect))
-
-    def get_idle(self):
-        return self.frames[0]
-    
-    def get_reverse_idle(self):
-        return pygame.transform.flip(self.get_idle(), True, False)
-
-    def get_run(self):
-        return self.frames[1:4]
-    
-    def get_jump(self):
-        return self.frames[5]
-    
-    def get_reverse_jump(self):
-        return pygame.transform.flip(self.get_jump(), True, False)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -40,12 +18,19 @@ class Player(pygame.sprite.Sprite):
         self.speed = 5
         self.on_ground = False
         self.jump_force = 10
-        self.can_move = True
+        
+        self.alive = True
+        
         self.animation_speed = 0.2
-
         self.frame = 0
         self.reversed = False
     
+    def death(self):
+        self.alive = False
+        self.velY = -self.jump_force
+        self.velX = 0
+        self.image = self.frames.get_death()
+
     def update(self, sprites: list):
         self.movement()
 
@@ -59,7 +44,12 @@ class Player(pygame.sprite.Sprite):
 
         self.animation()
 
+        if self.rect.y >= 600 and self.alive:
+            self.death()
+
     def animation(self):
+        if not self.alive: return
+
         if self.velY >= 0 and self.velY < 1:
             if self.velX == 0:
                 if self.reversed:
@@ -83,17 +73,16 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.image = self.frames.get_jump()
 
-
-    def movement(self):
-        if not self.can_move: return
+    def movement(self):        
+        if not self.on_ground:
+            self.velY += GRAVITY
         
+        if not self.alive: return
+
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_SPACE] and self.on_ground:
             self.velY = -self.jump_force
-
-        if not self.on_ground:
-            self.velY += GRAVITY
 
         if keys[pygame.K_RIGHT]:
             self.velX = self.speed
@@ -103,6 +92,8 @@ class Player(pygame.sprite.Sprite):
             self.velX = 0
     
     def collide(self, sprites, velX, velY):
+        if not self.alive: return
+        
         x = self.rect.x
         y = self.rect.y
         
